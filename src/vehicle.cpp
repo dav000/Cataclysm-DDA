@@ -3678,6 +3678,25 @@ tripoint_bub_ms vehicle::pos_bub() const
     return coords::project_to<coords::ms>( tripoint_bub_sm( sm_pos ) ) + pos;
 }
 
+tripoint vehicle::global_part_pos3(const int& index) const
+{
+    if (index < 0 || index >= parts.size() || parts.empty())
+    {
+        // Log an error message
+        debugmsg("Attempted to get global position for invalid part index %d. Vehicle has %zu parts.",
+            index, parts.size());
+
+        // Return the vehicle's global position as a fallback
+        return global_pos3();
+    }
+    return global_part_pos3(parts[index]);
+}
+
+tripoint vehicle::global_part_pos3(const vehicle_part &pt) const
+{
+    return global_pos3() + pt.precalc[0];
+}
+
 tripoint_bub_ms vehicle::bub_part_pos( const int index ) const
 {
     return bub_part_pos( parts[ index ] );

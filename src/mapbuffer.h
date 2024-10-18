@@ -83,10 +83,7 @@ class mapbuffer
         void remove_submap( const tripoint_abs_sm &addr );
         submap *unserialize_submaps( const tripoint_abs_sm &p );
         void deserialize( const JsonArray &ja );
-        void save_quad(
-            const cata_path &dirname, const cata_path &filename,
-            const tripoint_abs_omt &om_addr, std::list<tripoint_abs_sm> &submaps_to_delete,
-            bool delete_after_save );
+        void save_quad(const cata_path dirname, const cata_path filename, const tripoint_abs_omt om_addr, std::list<tripoint_abs_sm>& submaps_to_delete, bool delete_after_save, std::mutex& submaps_mutex);
         submap_map_t submaps; // NOLINT(cata-serialize)
 };
 
