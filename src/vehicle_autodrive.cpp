@@ -1177,10 +1177,14 @@ collision_check_result vehicle::autodrive_controller::check_collision_zone( orie
                                 driven_veh.cruise_velocity );
     const int speed_tps = speed / VMIPH_PER_TPS;
     std::unordered_set<point> collision_zone;
+    std::set<point> occupied_set(profile.occupied_zone.begin(), profile.occupied_zone.end());
     tdir.advance();
     point offset( tdir.dx(), tdir.dy() );
     for( const point &p : profile.occupied_zone ) {
-        collision_zone.insert( p + offset );
+        // only insert if it's not in the occupied zone
+        if (occupied_set.find(p + offset) == occupied_set.end()) {
+            collision_zone.insert(p + offset);
+        }
     }
     for( const point &p : collision_zone ) {
         if( !check_drivable( data.adjust_z( veh_pos + p ) ) ) {
@@ -1194,7 +1198,9 @@ collision_check_result vehicle::autodrive_controller::check_collision_zone( orie
         tdir.advance();
         offset += point( tdir.dx(), tdir.dy() );
         for( const point &p : profile.collision_points ) {
-            collision_zone.insert( p + offset );
+            if (occupied_set.find(p + offset) == occupied_set.end()) {
+                collision_zone.insert(p + offset);
+            }
         }
     }
     for( const point &p : collision_zone ) {

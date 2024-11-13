@@ -13,6 +13,7 @@
 #include <numeric>
 #include <queue>
 #include <set>
+#include <signal.h>
 #include <sstream>
 #include <tuple>
 #include <unordered_map>
@@ -3682,9 +3683,16 @@ tripoint vehicle::global_part_pos3(const int& index) const
 {
     if (index < 0 || index >= parts.size() || parts.empty())
     {
-        // Log an error message
-        debugmsg("Attempted to get global position for invalid part index %d. Vehicle has %zu parts.",
-            index, parts.size());
+        // collect info of the vehicle for debugging
+        // 
+        thread_local std::ostringstream vehicle_info_text;
+        vehicle_info_text << "Attempted to get global position for invalid part index: " << name << " at " << global_pos3() << " has " << parts.size() << " parts: ";
+        for (const vehicle_part& part : parts)
+        {
+            vehicle_info_text << part.info().name() << " at " << part.mount << ", ";
+        }
+        // Log the message text
+        debugmsg(vehicle_info_text.str().c_str());
 
         // Return the vehicle's global position as a fallback
         return global_pos3();
